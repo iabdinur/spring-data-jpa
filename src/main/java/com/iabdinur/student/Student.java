@@ -56,15 +56,23 @@ public class Student {
 
     @OneToOne(
             mappedBy = "student",
-            orphanRemoval = true)
+            orphanRemoval = true,
+            cascade = {CascadeType.PERSIST, CascadeType.REMOVE}
+    )
     private StudentIdCard studentIdCard;
 
     @OneToMany(
             mappedBy = "student",
             orphanRemoval = true,
-            cascade = {CascadeType.PERSIST, CascadeType.REMOVE }
+            cascade = {CascadeType.PERSIST, CascadeType.REMOVE}
     )
     private List<Book> books = new ArrayList<>();
+
+    @OneToMany(
+            cascade = {CascadeType.PERSIST, CascadeType.REMOVE},
+            mappedBy = "student"
+    )
+    private List<Enrolment> enrolments = new ArrayList<>();
 
     public Student() {
     }
@@ -128,6 +136,40 @@ public class Student {
             this.books.remove(book);
             book.setStudent(null);
         }
+    }
+
+    public StudentIdCard getStudentIdCard() {
+        return studentIdCard;
+    }
+
+    public void setStudentIdCard(StudentIdCard studentIdCard) {
+        this.studentIdCard = studentIdCard;
+    }
+
+    public List<Book> getBooks() {
+        return books;
+    }
+
+    public void setBooks(List<Book> books) {
+        this.books = books;
+    }
+
+    public List<Enrolment> getEnrolments() {
+        return enrolments;
+    }
+
+    public void addEnrolment(Enrolment enrolment) {
+        if(!enrolments.contains(enrolment)) {
+            enrolments.add(enrolment);
+        }
+    }
+
+    public void removeEnrolment(Enrolment enrolment) {
+        enrolments.remove(enrolment);
+    }
+
+    public void setEnrolments(List<Enrolment> enrolments) {
+        this.enrolments = enrolments;
     }
 
     @Override

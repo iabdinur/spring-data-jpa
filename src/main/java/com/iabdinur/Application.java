@@ -8,6 +8,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @SpringBootApplication
 public class Application {
@@ -17,8 +18,7 @@ public class Application {
 
     @Bean
     CommandLineRunner commandLineRunner(
-            StudentRepository studentRepository,
-            StudentIdCardRepository studentIdCardRepository) {
+            StudentRepository studentRepository) {
         return args -> {
             Faker faker = new Faker();
             String firstName = faker.name().firstName();
@@ -37,24 +37,32 @@ public class Application {
 
             StudentIdCard studentIdCard = new StudentIdCard("1234567889", student);
 
-            studentIdCardRepository.save(studentIdCard);
+            student.setStudentIdCard(studentIdCard);
 
-        };
-    }
+            student.addEnrolment(new Enrolment(
+                    new EnrolmentId(1L, 1L),
+                    student,
+                    new Course("Computer Science", "IT"),
+                    LocalDateTime.now()
+            ));
 
-    private static void generateRandomStudents(StudentRepository studentRepository) {
-        Faker faker = new Faker();
-        for (int i = 0; i < 100; i++) {
-            String firstName = faker.name().firstName();
-            String lastName = faker.name().lastName();
-            String email = String.format("%s.%s@gmail.com", firstName, lastName);
-            Integer age = faker.number().numberBetween(15, 55);
-            Student student = new Student(
-                    firstName,
-                    lastName,
-                    email,
-                    age);
+            student.addEnrolment(new Enrolment(
+                    new EnrolmentId(1L, 2L),
+                    student,
+                    new Course("Amigoscode Spring Data JPA", "IT"),
+                    LocalDateTime.now().minusDays(18)
+            ));
+
             studentRepository.save(student);
-        }
+
+            studentRepository.findById(1L)
+                            .ifPresent(s -> {
+                                System.out.println("fetch book lazy...");
+                                List<Book> books = student.getBooks();
+                                books.forEach(book -> {
+                                    System.out.println(s.getFirstName() + " borrowed " + book.getBookName());
+                                });
+                            });
+        };
     }
 }
