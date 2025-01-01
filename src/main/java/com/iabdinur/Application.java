@@ -62,6 +62,11 @@ public class Application {
                                 books.forEach(book -> {
                                     System.out.println(s.getFirstName() + " borrowed " + book.getBookName());
                                 });
+                                System.out.println("fetch enrolment lazy...");
+                                List<Enrolment> enrolments = student.getEnrolments();
+                                enrolments.forEach(enrolment -> {
+                                    System.out.println(s.getFirstName() + " is enrolled " + enrolment.getCourse());
+                                });
                             });
         };
     }
